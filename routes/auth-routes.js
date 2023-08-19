@@ -6,10 +6,11 @@ const fs = require("fs");
 
 // auth login
 router.get("/login", (req, res) => {
+  const user = { user: req.user };
   const templatePath = path.join(__dirname, "..", "views", "login.ejs");
   const templateContent = fs.readFileSync(templatePath, "utf-8");
 
-  const renderedHtml = ejs.render(templateContent);
+  const renderedHtml = ejs.render(templateContent, { user });
 
   //   res.render("login");
   res.setHeader("Content-Type", "text/html");
