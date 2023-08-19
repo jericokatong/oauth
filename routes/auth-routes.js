@@ -1,9 +1,19 @@
 const router = require("express").Router();
 const passport = require("passport");
+const ejs = require("ejs");
+const path = require("path");
+const fs = require("fs");
 
 // auth login
 router.get("/login", (req, res) => {
-  res.render("login");
+  const templatePath = path.join(__dirname, "..", "views", "login.ejs");
+  const templateContent = fs.readFileSync(templatePath, "utf-8");
+
+  const renderedHtml = ejs.render(templateContent);
+
+  //   res.render("login");
+  res.setHeader("Content-Type", "text/html");
+  res.status(200).send(renderedHtml);
 });
 
 // auth logout

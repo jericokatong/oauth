@@ -8,6 +8,10 @@ const session = require("express-session");
 const authRoutes = require("./routes/auth-routes");
 const profileRoutes = require("./routes/profile-router");
 
+const ejs = require("ejs");
+const path = require("path");
+const fs = require("fs");
+
 const app = express();
 
 // set up view engine
@@ -39,7 +43,14 @@ app.use("/profile", profileRoutes);
 
 // create home route
 app.get("/", (req, res) => {
-  res.render("home");
+  const templatePath = path.join(__dirname, "views", "home.ejs");
+  const templateContent = fs.readFileSync(templatePath, "utf-8");
+
+  const renderedHtml = ejs.render(templateContent);
+
+  res.setHeader("Content-Type", "text/html");
+  res.status(200).send(renderedHtml);
+  // res.render("home");
 });
 
 app.listen(3000, () => console.log("app now listening for requests on port 3000"));
