@@ -40,25 +40,49 @@ passport.use(
 
           axios.get(apiEndpoint, config).then((response) => {
             const data = response.data;
-            console.log("Data dari Google People API:", data);
-            console.log("Data dari Google People API birthdays:", data.birthdays);
+            // console.log("Data dari Google People API:", data);
+            // console.log("Data dari Google People API birthdays:", data.birthdays);
 
-            console.log("ini tahun", typeof data.birthdays[0].date.year);
-            console.log("ini bulan", data.birthdays[0].date.month);
-            console.log("ini tanggal", data.birthdays[0].date.day);
+            // console.log("ini tahun", typeof data.birthdays[0].date.year);
+            // console.log("ini bulan", data.birthdays[0].date.month);
+            // console.log("ini tanggal", data.birthdays[0].date.day);
             // const birthdate = new Date(data.birthdays[0].date.year, data.birthdays[0].date.month - 1, data.birthdays[0].date.day);
             const birthdate = moment([data.birthdays[0].date.year, data.birthdays[0].date.month - 1, data.birthdays[0].date.day + 1]);
             console.log("ini birthdate: ", birthdate);
-            User.create({
-              googleId: profile.id,
-              username: profile.displayName,
-              thumbnail: profile._json.picture,
-              gender: data.genders.value,
-              birthdate,
-            }).then((newUser) => {
-              console.log("Ini newUser: ", newUser);
-              done(null, newUser);
-            });
+            if (birthdate && data.genders.value) {
+              User.create({
+                googleId: profile.id,
+                username: profile.displayName,
+                thumbnail: profile._json.picture,
+                gender: data.genders.value,
+                birthdate,
+              }).then((newUser) => {
+                console.log("Ini newUser: ", newUser);
+                done(null, newUser);
+              });
+            } else if (birthdate) {
+              User.create({
+                googleId: profile.id,
+                username: profile.displayName,
+                thumbnail: profile._json.picture,
+                gender: null,
+                birthdate,
+              }).then((newUser) => {
+                console.log("Ini newUser: ", newUser);
+                done(null, newUser);
+              });
+            } else if (data.genders.value) {
+              User.create({
+                googleId: profile.id,
+                username: profile.displayName,
+                thumbnail: profile._json.picture,
+                gender: data.genders.value,
+                birthdate: null,
+              }).then((newUser) => {
+                console.log("Ini newUser: ", newUser);
+                done(null, newUser);
+              });
+            }
           });
         }
       });
